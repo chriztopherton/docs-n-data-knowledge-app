@@ -178,7 +178,9 @@ def main(title, user_input_confirmed=False, response=None):
         with st.spinner("Generating knowledge graph (this takes a while)..."):
             response_data = get_llm_graph_data_response(user_input, model_name=state.chat_model)
             with st.expander("View KG contents"):
-                # st.text(response_data)
+                st.text(response_data)
+                
+                """
                 data = json.loads(response_data)
                 nodes = pd.DataFrame(data['nodes'])
                 nodes.drop('color',axis=1,inplace=True)
@@ -204,6 +206,7 @@ def main(title, user_input_confirmed=False, response=None):
                     'type_from': 'to_type'})
 
                 st.table(merged_df)
+                """
 
         # c1, c2, _ = st.columns([2, 1, 3])
         # with c1:
