@@ -84,64 +84,67 @@ def start():
         #     'in as much detail as you like. For your convenience, some sample questions are provided below.'
         # )
     # c1, _, c3, _ = st.columns([1, 0.075, 1, 1.5])
-    c1,c2 = st.columns(2)
-    with c1:
-        st.markdown('### **1️⃣ Enter URL**')
-        user_input = st.text_input(
-            "Enter question here...",
-            placeholder="🔗", #Enter text 🖋️ or URL 🔗
-            label_visibility="collapsed",
-            key="user_text_input"
-        )
-        # example_selection = st.selectbox(
-        #     "📑 You can choose a sample question here instead",
-        #     options=SAMPLE_QUESTIONS,
-        #     index=0,
-        #     key="examples_selectbox"
-        # )
+    # c1,c2 = st.columns(2)
+    # with c1:
+    st.subheader('**1️⃣ Enter URL**')
+    user_input = st.text_input(
+        "Enter question here...",
+        placeholder="🔗", #Enter text 🖋️ or URL 🔗
+        label_visibility="collapsed",
+        key="user_text_input"
+    )
+    example_selection = st.selectbox(
+        "📑 You can choose a sample question here instead",
+        options=SAMPLE_QUESTIONS,
+        index=0,
+        key="examples_selectbox"
+    )
 
-    with c2:
-        user_input_confirmed = False
-        include_knowledge_graph = False
-        # radio_options = [user_input, example_selection] if user_input and (user_input != example_selection) else ([example_selection] if example_selection != "None" else [])
-        radio_options = [user_input,"None"]
+    # with c2:
+    user_input_confirmed = False
+    include_knowledge_graph = False
+    # radio_options = [user_input, example_selection] if user_input and (user_input != example_selection) else ([example_selection] if example_selection != "None" else [])
+    radio_options = [user_input,"None"]
 
-        if radio_options:
-            st.markdown('### **2️⃣ Confirm your question**')
-            with st.form(key="confirm_input_form"):
-                st.radio(
-                    "Confirm input", options=radio_options,
-                    label_visibility="collapsed",
-                    horizontal=True,
-                    key="confirm_input"
-                )
-                c1, c2, _ = st.columns([1, 1, 1.5])
-                with c1:
-                    user_input_confirmed = st.form_submit_button(
-                        label="Confirm and get answer", type='primary',
-                        on_click=_set_state_cb, kwargs={
-                            'user_input': "confirm_input",
-                            'estimated_cost_doc': 'estimated_cost_reset',
-                            'estimated_cost_graph': 'estimated_cost_reset',
-                        }
-                    )
-                with c2:
-                    include_knowledge_graph = st.checkbox('Include KG', value=False)
+    if radio_options:
+        st.subheader('**2️⃣ Confirm your question**')
+        with st.form(key="confirm_input_form"):
+            st.radio(
+                "Confirm input", options=radio_options,
+                label_visibility="collapsed",
+                horizontal=True,
+                key="confirm_input"
+            )
+            # c1, c2, _ = st.columns([1, 1, 1.5])
+            # with c1:
+            include_knowledge_graph = st.checkbox('Include Knowledge Graph', value=True)
+            
+            user_input_confirmed = st.form_submit_button(
+                label="Confirm and get answer", type='primary',
+                on_click=_set_state_cb, kwargs={
+                    'user_input': "confirm_input",
+                    'estimated_cost_doc': 'estimated_cost_reset',
+                    'estimated_cost_graph': 'estimated_cost_reset',
+                }
+            )
+            # with c2:
+            
 
-    if state.user_input:
-        st.markdown(f'###### ✅ Confirmed question: _{state.user_input}_')
-        st.markdown(f'###### ✅ Include knowledge graph: _{include_knowledge_graph}_')
-    else:
-        st.markdown('###### ❌ No question confirmed yet')
+    # if state.user_input:
+    #     st.markdown(f'###### ✅ Confirmed question: _{state.user_input}_')
+    #     st.markdown(f'###### ✅ Include knowledge graph: _{include_knowledge_graph}_')
+    # else:
+    #     st.markdown('###### ❌ No question confirmed yet')
     
-    st.markdown('---')
+    # st.markdown('---')
 
         # c1, _, c3 = st.columns([1.5, 0.25, 1])
         # with c1:
-    response = app_llm_docs_query.main('Document Q&A', user_input_confirmed)
+    # response = app_llm_docs_query.main('Document Q&A', user_input_confirmed)
+    
         # with c3:
     if include_knowledge_graph:
-            app_llm_knowlege_graph_gen.main('Knowledge Graph', user_input_confirmed, response)
+        app_llm_knowlege_graph_gen.main('Knowledge Graph', user_input_confirmed)
 
     # Simple Excel Data Q&A
     # if top_level == top_level_options[1]:

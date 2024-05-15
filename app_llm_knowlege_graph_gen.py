@@ -121,7 +121,9 @@ def get_graph_data(response_data):
             for edge in response_dict["edges"]
         ]
         return {"elements": {"nodes": nodes, "edges": edges}}
-    except:
+    except Exception as e:
+        st.warning("Error generating knowledge graph. Please retry with another url/page with less context possibly.")
+        print(e)
         return {"elements": {"nodes": [], "edges": []}}
 
 # UTILITY ---------------------------------------------------------------------
@@ -173,15 +175,15 @@ def main(title, user_input_confirmed=False, response=None):
     if user_input:
         # print(user_input)
 
-        st.subheader('💡 Answer Knowledge Graph')
+        # st.subheader('💡 Answer Knowledge Graph')
         # This will use cached response!
         with st.spinner("Generating knowledge graph (this takes a while)..."):
             response_data = get_llm_graph_data_response(user_input, model_name=state.chat_model)
             with st.expander("View KG contents"):
-                st.text(response_data)
+                # st.text(response_data)
                 
-                """
-                data = json.loads(response_data)
+                
+                data = json.loads(r'{}'.format(response_data))
                 nodes = pd.DataFrame(data['nodes'])
                 nodes.drop('color',axis=1,inplace=True)
                 edges = pd.DataFrame(data['edges'])
@@ -206,7 +208,7 @@ def main(title, user_input_confirmed=False, response=None):
                     'type_from': 'to_type'})
 
                 st.table(merged_df)
-                """
+                
 
         # c1, c2, _ = st.columns([2, 1, 3])
         # with c1:
@@ -231,6 +233,10 @@ def main(title, user_input_confirmed=False, response=None):
             'graph_height': 750,
             'show_graph_data': False,
         }
+        
+        st.session_state['props'] = props
+        
+        # print(props)
         handle_event(run_component(props))
 
         # if radio_option == radio_options[1]:

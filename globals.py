@@ -44,14 +44,19 @@ VECTOR_STORE = 'Weaviate' # 'Weaviate' | 'Local'
 
 SAMPLE_QUESTIONS = [
     "None",
-    "Summarize the most important concepts in a high performance software application",
-    "Summarize the Wardley mapping technique",
-    "Summarize the Viewpoints and Perspectives software solutions design methodology",
-    "What are the most important considerations when architecting a software solution",
-    "Build a 5-part learning plan on how to become a software architect. Detail each part with a short description and bullet points.",
-    "Machine learning model training, deployment and operations",
-    "What is a knowledge graph",
-    "What is a graph neural network",
-    "https://en.wikipedia.org/wiki/Graph_theory",
-    "Most important factors of high performing teams",
+    # "Summarize the most important concepts in a high performance software application",
+    # "Summarize the Wardley mapping technique",
+    # "Summarize the Viewpoints and Perspectives software solutions design methodology",
+    # "What are the most important considerations when architecting a software solution",
+    # "Build a 5-part learning plan on how to become a software architect. Detail each part with a short description and bullet points.",
+    # "Machine learning model training, deployment and operations",
+    # "What is a knowledge graph",
+    # "What is a graph neural network",
+    "https://huggingface.co/",
+    "https://en.wikipedia.org/wiki/Basel",
+    "https://sfstandard.com/2024/05/15/theres-a-reason-youre-suffering-so-much-this-allergy-season-heres-why-and-what-to-do/",
+    "https://stackoverflow.co/",
+    "https://en.wikipedia.org/wiki/University_of_Basel"
+    # "Most important factors of high performing teams",
+    
 ]

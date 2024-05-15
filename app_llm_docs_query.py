@@ -126,9 +126,9 @@ def main(title, user_input_confirmed=False):
             key='selectbox_docs_completions_model_name'
         )
         # include_history = st.checkbox('Include history in prompts', value=False)
-        if st.button('Clear history'):
-            state.questions = []
-            state.past = []
+        # if st.button('Clear history'):
+        #     state.questions = []
+        #     state.past = []
         # NOTE: Hide indexing button if cloud deployment (temporary fix for public demo)
         # if not json.loads(st.secrets['IS_CLOUD_DEPLOYMENT']) and st.button('Index documents'):
         #     with st.spinner("Indexing..."):
