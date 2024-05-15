@@ -62,94 +62,98 @@ import app_llm_data_query, app_llm_docs_query, app_llm_knowlege_graph_gen, app_a
 
 def start():
     # Sidebar
-    with st.sidebar:
-        st.image('./images/a12i_logo_circle_transparent.png')
-        top_level_options = ['Document Q&A | Knowedge Graph', 'Data Chat', 'About']
-        st.subheader('What would you like to do?')
-        top_level = st.radio(
-            'What would you like to do?', 
-            top_level_options, index=0,
-            label_visibility='collapsed', horizontal=False
-        )
+    # with st.sidebar:
+        # st.image('./images/a12i_logo_circle_transparent.png')
+        # top_level_options = ['Document Q&A | Knowedge Graph', 'Data Chat', 'About']
+        # st.subheader('What would you like to do?')
+        # top_level = st.radio(
+        #     'What would you like to do?', 
+        #     top_level_options, index=0,
+        #     label_visibility='collapsed', horizontal=False
+        # )
         
     # Document Q&A | Knowledge Graph
-    if top_level == top_level_options[0]:
-        c1, _ = st.columns([1, 1.5])
-        with c1:
-            # Title and description
-            st.subheader('Document Q&A ❣️ Knowledge Graph')
-            st.caption(
-                '📑 Ask a question based on pre-uploaded documents on the subject of **Software Architecture**. You can ask questions on any topic '
-                'in as much detail as you like. For your convenience, some sample questions are provided below.'
-            )
-        c1, _, c3, _ = st.columns([1, 0.075, 1, 1.5])
-        with c1:
-            st.markdown('### **1️⃣ Ask a question**')
-            user_input = st.text_input(
-                "Enter question here...",
-                placeholder="Enter text 🖋️ or URL 🔗",
-                label_visibility="collapsed",
-                key="user_text_input"
-            )
-            example_selection = st.selectbox(
-                "📑 You can choose a sample question here instead",
-                options=SAMPLE_QUESTIONS,
-                index=0,
-                key="examples_selectbox"
-            )
+    # if top_level == top_level_options[0]:
+    c1, _ = st.columns(2)
+    with c1:
+        # Title and description
+        # st.subheader('Document Q&A ❣️ Knowledge Graph')
+        st.subheader('Knowledge Graph')
+        # st.caption(
+        #     '📑 Ask a question based on pre-uploaded documents on the subject of **Software Architecture**. You can ask questions on any topic '
+        #     'in as much detail as you like. For your convenience, some sample questions are provided below.'
+        # )
+    # c1, _, c3, _ = st.columns([1, 0.075, 1, 1.5])
+    c1,c2 = st.columns(2)
+    with c1:
+        st.markdown('### **1️⃣ Ask a question**')
+        user_input = st.text_input(
+            "Enter question here...",
+            placeholder="Enter URL 🔗", #Enter text 🖋️ or URL 🔗
+            label_visibility="collapsed",
+            key="user_text_input"
+        )
+        # example_selection = st.selectbox(
+        #     "📑 You can choose a sample question here instead",
+        #     options=SAMPLE_QUESTIONS,
+        #     index=0,
+        #     key="examples_selectbox"
+        # )
 
-        with c3:
-            user_input_confirmed = False
-            include_knowledge_graph = False
-            radio_options = [user_input, example_selection] if user_input and (user_input != example_selection) else ([example_selection] if example_selection != "None" else [])
-            if radio_options:
-                st.markdown('### **2️⃣ Confirm your question**')
-                with st.form(key="confirm_input_form"):
-                    st.radio(
-                        "Confirm input", options=radio_options,
-                        label_visibility="collapsed",
-                        horizontal=True,
-                        key="confirm_input"
+    with c2:
+        user_input_confirmed = False
+        include_knowledge_graph = False
+        # radio_options = [user_input, example_selection] if user_input and (user_input != example_selection) else ([example_selection] if example_selection != "None" else [])
+        radio_options = [user_input,"None"]
+
+        if radio_options:
+            st.markdown('### **2️⃣ Confirm your question**')
+            with st.form(key="confirm_input_form"):
+                st.radio(
+                    "Confirm input", options=radio_options,
+                    label_visibility="collapsed",
+                    horizontal=True,
+                    key="confirm_input"
+                )
+                c1, c2, _ = st.columns([1, 1, 1.5])
+                with c1:
+                    user_input_confirmed = st.form_submit_button(
+                        label="Confirm and get answer", type='primary',
+                        on_click=_set_state_cb, kwargs={
+                            'user_input': "confirm_input",
+                            'estimated_cost_doc': 'estimated_cost_reset',
+                            'estimated_cost_graph': 'estimated_cost_reset',
+                        }
                     )
-                    c1, c2, _ = st.columns([1, 1, 1.5])
-                    with c1:
-                        user_input_confirmed = st.form_submit_button(
-                            label="Confirm and get answer", type='primary',
-                            on_click=_set_state_cb, kwargs={
-                                'user_input': "confirm_input",
-                                'estimated_cost_doc': 'estimated_cost_reset',
-                                'estimated_cost_graph': 'estimated_cost_reset',
-                            }
-                        )
-                    with c2:
-                        include_knowledge_graph = st.checkbox('Include knowledge graph', value=False)
+                with c2:
+                    include_knowledge_graph = st.checkbox('Include KG', value=False)
 
-        if state.user_input:
-            st.markdown(f'###### ✅ Confirmed question: _{state.user_input}_')
-            st.markdown(f'###### ✅ Include knowledge graph: _{include_knowledge_graph}_')
-        else:
-            st.markdown('###### ❌ No question confirmed yet')
-        
-        st.markdown('---')
+    if state.user_input:
+        st.markdown(f'###### ✅ Confirmed question: _{state.user_input}_')
+        st.markdown(f'###### ✅ Include knowledge graph: _{include_knowledge_graph}_')
+    else:
+        st.markdown('###### ❌ No question confirmed yet')
+    
+    st.markdown('---')
 
-        c1, _, c3 = st.columns([1.5, 0.25, 1])
-        with c1:
-            response = app_llm_docs_query.main('Document Q&A', user_input_confirmed)
-        with c3:
-            if include_knowledge_graph:
-                app_llm_knowlege_graph_gen.main('Knowledge Graph', user_input_confirmed, response)
+        # c1, _, c3 = st.columns([1.5, 0.25, 1])
+        # with c1:
+    response = app_llm_docs_query.main('Document Q&A', user_input_confirmed)
+        # with c3:
+    if include_knowledge_graph:
+            app_llm_knowlege_graph_gen.main('Knowledge Graph', user_input_confirmed, response)
 
     # Simple Excel Data Q&A
-    if top_level == top_level_options[1]:
-        c1, _ = st.columns([1, 2])
-        with c1:
-            st.subheader('🔢 Simple Excel Data Q&A')
-            app_llm_data_query.main('Data Chat')
+    # if top_level == top_level_options[1]:
+    #     c1, _ = st.columns([1, 2])
+    #     with c1:
+    #         st.subheader('🔢 Simple Excel Data Q&A')
+    #         app_llm_data_query.main('Data Chat')
             
     # About / Display README.md
-    if top_level == top_level_options[2]:
-        st.subheader('📖 Readme')
-        app_about.main()
+    # if top_level == top_level_options[2]:
+    #     st.subheader('📖 Readme')
+    #     app_about.main()
 
     with st.sidebar:
         st.markdown('---')
@@ -173,9 +177,9 @@ def start():
             display_state = {k: v for k, v in state.items() if not ('openai' in k or 'weaviate' in k)}
             st.write(display_state)
 
-        st.subheader('About')
-        st.sidebar.info('Integrated LLM-based document and data Q&A with knowledge graph visualization.\n\n' + \
-            '(c) 2023. A12i (CloudOpti Ltd.) All rights reserved.')
+        # st.subheader('About')
+        # st.sidebar.info('Integrated LLM-based document and data Q&A with knowledge graph visualization.\n\n' + \
+        #     '(c) 2023. A12i (CloudOpti Ltd.) All rights reserved.')
 
 if __name__ == '__main__':
     start()

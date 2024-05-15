@@ -62,6 +62,7 @@ def get_llm_graph_data_response(user_input, model_name=DEFAULT_MODEL_CONFIG['cha
     # clean up the response data JSON
     response_data = correct_json(response_data)
     # print(response_data)
+    # print(response_data)
 
     estimated_cost = ((completion.usage.prompt_tokens / 1000.0) * LANG_MODEL_PRICING[state.chat_model]['input']) + \
         ((completion.usage.completion_tokens / 1000.0) * LANG_MODEL_PRICING[state.chat_model]['output'])
@@ -165,55 +166,59 @@ def main(title, user_input_confirmed=False, response=None):
     user_input = user_input.replace('\n', ' ').replace('\r', '') if user_input else user_input
 
     if user_input_confirmed and user_input:
+        # print(user_input)
         with st.spinner("Generating knowledge graph (this takes a while)..."):
             response_data = get_llm_graph_data_response(user_input, model_name=state.chat_model)
 
     if user_input:
+        # print(user_input)
+
         st.subheader('💡 Answer Knowledge Graph')
         # This will use cached response!
         with st.spinner("Generating knowledge graph (this takes a while)..."):
             response_data = get_llm_graph_data_response(user_input, model_name=state.chat_model)
+            print(response_data)
 
-        c1, c2, _ = st.columns([2, 1, 3])
-        with c1:
-            radio_options = ["Interactive", "Static", "Data"]
-            radio_option = st.radio('Knowledge graph options', options=radio_options, horizontal=True)
-        with c2:
-            height = st.slider("Adjust image height", 100, 1000, 750, 50)
+        # c1, c2, _ = st.columns([2, 1, 3])
+        # with c1:
+            # radio_options = ["Interactive", "Static", "Data"]
+            # radio_option = st.radio('Knowledge graph options', options=radio_options, horizontal=True)
+        # with c2:
+        # height = st.slider("Adjust image height", 100, 1000, 750, 50)
         
-        if radio_option == radio_options[0]:
-            from graph_frontend import graph_component
+        # if radio_option == radio_options[0]:
+        from graph_frontend import graph_component
 
-            # NOTE: This component doesn't actually return any data, so handle_event is a no-op
-            def run_component(props):
-                value = graph_component(key='graph', **props)
-                return value
-            def handle_event(value):
-                if value is not None:
-                    st.write('Received from graph component: ', value)
+        # NOTE: This component doesn't actually return any data, so handle_event is a no-op
+        def run_component(props):
+            value = graph_component(key='graph', **props)
+            return value
+        def handle_event(value):
+            if value is not None:
+                st.write('Received from graph component: ', value)
 
-            props = {
-                'data': { 'graph': get_graph_data(response_data) },
-                'graph_height': height,
-                'show_graph_data': False,
-            }
-            handle_event(run_component(props))
+        props = {
+            'data': { 'graph': get_graph_data(response_data) },
+            'graph_height': 750,
+            'show_graph_data': False,
+        }
+        handle_event(run_component(props))
 
-        if radio_option == radio_options[1]:
-            graph_data = generate_knowledge_graph(response_data)
-            # If graphviz executable is available, then we'll have a PNG to download or display
-            if graph_data['png']:
-                image_html_frags = image_html_fragments(
-                    graph_data['png'], '',
-                    image_style=f"height: {height}px; margin: 5px;",
-                    text_style="font-weight: 600; font-size: 1.75rem;"
-                )
-                st.markdown(f"{image_html_frags['image_download_link']}", unsafe_allow_html=True)
-                # st.markdown(f"{image_html_frags['image_tag_html']}", unsafe_allow_html=True)
-                # st.markdown(f"{image_html_frags['image_html']}", unsafe_allow_html=True)
+        # if radio_option == radio_options[1]:
+        #     graph_data = generate_knowledge_graph(response_data)
+        #     # If graphviz executable is available, then we'll have a PNG to download or display
+        #     if graph_data['png']:
+        #         image_html_frags = image_html_fragments(
+        #             graph_data['png'], '',
+        #             image_style=f"height: {height}px; margin: 5px;",
+        #             text_style="font-weight: 600; font-size: 1.75rem;"
+        #         )
+        #         st.markdown(f"{image_html_frags['image_download_link']}", unsafe_allow_html=True)
+        #         # st.markdown(f"{image_html_frags['image_tag_html']}", unsafe_allow_html=True)
+        #         # st.markdown(f"{image_html_frags['image_html']}", unsafe_allow_html=True)
             
-            # Display using Streamlit's D3.js graphviz renderer
-            st.graphviz_chart(graph_data['dot'])
+        #     # Display using Streamlit's D3.js graphviz renderer
+        #     st.graphviz_chart(graph_data['dot'])
             
-        if radio_option == radio_options[2]:
-            st.json(get_graph_data(response_data), expanded=True)
+        # if radio_option == radio_options[2]:
+        #     st.json(get_graph_data(response_data), expanded=True)

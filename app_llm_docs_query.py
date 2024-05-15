@@ -125,14 +125,14 @@ def main(title, user_input_confirmed=False):
             help='Allowed models. Accuracy, speed, token consumption and costs will vary.',
             key='selectbox_docs_completions_model_name'
         )
-        include_history = st.checkbox('Include history in prompts', value=False)
+        # include_history = st.checkbox('Include history in prompts', value=False)
         if st.button('Clear history'):
             state.questions = []
             state.past = []
         # NOTE: Hide indexing button if cloud deployment (temporary fix for public demo)
-        if not json.loads(st.secrets['IS_CLOUD_DEPLOYMENT']) and st.button('Index documents'):
-            with st.spinner("Indexing..."):
-                _index_documents()
+        # if not json.loads(st.secrets['IS_CLOUD_DEPLOYMENT']) and st.button('Index documents'):
+        #     with st.spinner("Indexing..."):
+        #         _index_documents()
 
     # GPT completion models can not handle web sites, so we scrape the URL in the user input
     user_input = state.user_input
@@ -141,21 +141,21 @@ def main(title, user_input_confirmed=False):
         user_input = scraped_texts[0] if scraped_texts else user_input
         user_input = user_input.replace('\n', ' ').replace('\r', '') if user_input else user_input
 
-    if include_history:
-        context = '\n\n'.join([f'| Question: "{q}" | Answer: "{a}" |' for q, a in zip(state.questions, state.past)])
-        refinement = \
-            'Finally, return results in markdown text, include bullet point format where appropriate. ' + \
-            'Add additional web links at the end of the response if this is useful.'
-        prompt_template = "Given this context ### {context} ###. Answer or summarize this: ### {doc_query} ###. {refinement}"
-        prompt = PromptTemplate(input_variables=['context', 'doc_query', 'refinement'], template=prompt_template)
-        query_prompt = prompt.format(context=context, doc_query=user_input, refinement=refinement)
-    else:
-        refinement = \
-            'Return results in markdown text, include bullet point format where appropriate. ' + \
-            'Add additional web links at the end of the response if this is useful.'
-        prompt_template = "Answer or summarize this: ### {doc_query} ###. {refinement}"
-        prompt = PromptTemplate(input_variables=['doc_query', 'refinement'], template=prompt_template)
-        query_prompt = prompt.format(doc_query=user_input, refinement=refinement)
+    # if include_history:
+    #     context = '\n\n'.join([f'| Question: "{q}" | Answer: "{a}" |' for q, a in zip(state.questions, state.past)])
+    #     refinement = \
+    #         'Finally, return results in markdown text, include bullet point format where appropriate. ' + \
+    #         'Add additional web links at the end of the response if this is useful.'
+    #     prompt_template = "Given this context ### {context} ###. Answer or summarize this: ### {doc_query} ###. {refinement}"
+    #     prompt = PromptTemplate(input_variables=['context', 'doc_query', 'refinement'], template=prompt_template)
+    #     query_prompt = prompt.format(context=context, doc_query=user_input, refinement=refinement)
+    # else:
+    refinement = \
+        'Return results in markdown text, include bullet point format where appropriate. ' + \
+        'Add additional web links at the end of the response if this is useful.'
+    prompt_template = "Answer or summarize this: ### {doc_query} ###. {refinement}"
+    prompt = PromptTemplate(input_variables=['doc_query', 'refinement'], template=prompt_template)
+    query_prompt = prompt.format(doc_query=user_input, refinement=refinement)
 
     if user_input_confirmed and state.user_input:
         with st.spinner("Generating query answer..."):
@@ -172,7 +172,7 @@ def main(title, user_input_confirmed=False):
                 return
 
     if state.user_input:
-        st.subheader('🙋🏽 Answer')
+        # st.subheader('🙋🏽 Answer')
         with st.spinner("Generating query answer..."):
             try:
                 # This will use cached response!
@@ -182,15 +182,15 @@ def main(title, user_input_confirmed=False):
                 st.error(str(ex))
                 return
             
-        if state.user_input not in state.questions:
-            state.questions.append(state.user_input)
-            state.generated.append((state.user_input, response))
-            state.past.append(response)
+        # if state.user_input not in state.questions:
+        #     state.questions.append(state.user_input)
+        #     state.generated.append((state.user_input, response))
+        #     state.past.append(response)
 
-        st.markdown(response)
+        # st.markdown(response)
 
-        with st.expander('View conversation history', expanded=False):
-            st.markdown('\n\n'.join([f'---\n**Question**\n\n{q}\n\n**Answer**\n\n{a}' for q, a in zip(state.questions, state.past)]))
+        # with st.expander('View conversation history', expanded=False):
+        #     st.markdown('\n\n'.join([f'---\n**Question**\n\n{q}\n\n**Answer**\n\n{a}' for q, a in zip(state.questions, state.past)]))
             
         estimated_cost = ((token_counter.prompt_llm_token_count / 1000.0) * LANG_MODEL_PRICING[state.completions_model]['input']) + \
             ((token_counter.completion_llm_token_count / 1000.0) * LANG_MODEL_PRICING[state.completions_model]['output'])
