@@ -103,8 +103,8 @@ def start():
     # with c2:
     user_input_confirmed = False
     include_knowledge_graph = False
-    # radio_options = [user_input, example_selection] if user_input and (user_input != example_selection) else ([example_selection] if example_selection != "None" else [])
-    radio_options = [user_input,"None"]
+    radio_options = [user_input, example_selection] if user_input and (user_input != example_selection) else ([example_selection] if example_selection != "None" else [])
+    # radio_options = [user_input,"None"]
 
     if radio_options:
         st.subheader('**2️⃣ Confirm your question**')
