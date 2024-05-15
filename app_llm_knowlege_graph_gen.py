@@ -3,7 +3,7 @@ import re
 import openai
 from graphviz import Digraph
 import base64
-
+import pandas as pd
 import streamlit as st
 
 import func_prompt
@@ -177,7 +177,33 @@ def main(title, user_input_confirmed=False, response=None):
         # This will use cached response!
         with st.spinner("Generating knowledge graph (this takes a while)..."):
             response_data = get_llm_graph_data_response(user_input, model_name=state.chat_model)
-            print(response_data)
+            with st.expander("View KG contents"):
+                # st.text(response_data)
+                data = json.loads(response_data)
+                nodes = pd.DataFrame(data['nodes'])
+                nodes.drop('color',axis=1,inplace=True)
+                edges = pd.DataFrame(data['edges'])
+                edges.drop('color',axis=1,inplace=True)
+                
+                # Merging the edges with nodes to get source node details
+                edges_with_from = pd.merge(edges, nodes, how='left', left_on='from', right_on='id', suffixes=('_edge', '_from'))
+
+                # Merging the result with nodes to get destination node details
+                merged_df = pd.merge(edges_with_from, nodes, how='left', left_on='to', right_on='id', suffixes=('', '_to'))
+
+                # Dropping duplicate columns
+                merged_df = merged_df.drop(columns=['id_to'])
+
+                # Renaming columns for clarity
+                merged_df = merged_df.rename(columns={
+                    'id': 'from_id',
+                    'label': 'from_label',
+                    'type': 'from_type',
+                    'id_from': 'to_id',
+                    'label_from': 'to_label',
+                    'type_from': 'to_type'})
+
+                st.table(merged_df)
 
         # c1, c2, _ = st.columns([2, 1, 3])
         # with c1:

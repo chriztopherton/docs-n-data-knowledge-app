@@ -5,7 +5,7 @@ import streamlit as st
 import streamlit_debug
 streamlit_debug.set(flag=True, wait_for_client=False, host='localhost', port=7777)
 
-st.set_page_config(page_title='ChatGPT Pandas CSV Streamlit App', page_icon='🤖', initial_sidebar_state='expanded', layout='wide')
+st.set_page_config(page_title='Knowledge Graph Demo', page_icon='🤖', initial_sidebar_state='expanded', layout='wide')
 # Remove blank space between top of page and content
 st.markdown("<style>div[data-testid='stSidebarUserContent'] { padding-top: 1rem; }</style>", unsafe_allow_html=True)
 st.markdown("<style>div[data-testid='block-container'] { padding-top: 1rem; }</style> ", unsafe_allow_html=True)
@@ -86,10 +86,10 @@ def start():
     # c1, _, c3, _ = st.columns([1, 0.075, 1, 1.5])
     c1,c2 = st.columns(2)
     with c1:
-        st.markdown('### **1️⃣ Ask a question**')
+        st.markdown('### **1️⃣ Enter URL**')
         user_input = st.text_input(
             "Enter question here...",
-            placeholder="Enter URL 🔗", #Enter text 🖋️ or URL 🔗
+            placeholder="🔗", #Enter text 🖋️ or URL 🔗
             label_visibility="collapsed",
             key="user_text_input"
         )
